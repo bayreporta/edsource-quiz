@@ -1,0 +1,114 @@
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		#quiz-container {
+			min-width:		320px;
+			width:			320px;
+		}
+
+		.header {
+			margin: 		10px 0 25px 0;
+			display: 		block;
+		}
+
+		.image-option {
+			display:		block;
+			cursor: 		pointer;
+			margin: 		0 auto 20px auto;
+			border: 		1px solid #333;
+			width: 			200px;
+			position: 		relative;
+		}
+
+			.option-caption {
+				position: 	absolute;
+				display: 	block;
+				z-index: 	1000;
+				top: 		178px;
+				right: 		0;
+				padding: 	2px;
+				background:	#fff;
+			}
+
+			.option-text {
+				margin: 	5px 0 0 0;
+				display: 	block;
+			}
+
+			.image-option img {
+				width: 	   	200px;
+			}
+
+	</style>
+</head>
+<body>
+	<div id="quiz-container"></div>
+
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="http://edsource.org/wp-content/js/underscore-min.js"></script>
+	<script src="http://edsource.org/wp-content/js/modernizr.js"></script>
+	<script type="text/javascript">
+		var quizQuestions = [];
+		var $quizContain = $('#quiz-container');
+		var quizTemplate = {
+			all:{
+				header: '<h2 class="header"></h2>'
+			},
+			image:{
+				frame: '<div class="question image"></div>',
+				optionFrame: '<div class="image-option"><img src=""><span class="option-text"></span><span class="option-caption"></span></div> '
+			}
+		}
+		var quizFunctions = {
+			createQuiz:function(data){
+				var ii = 0;
+
+				for (i=1 ; i < data.length ; i++){
+					if (data[i][1] === 'Image' || data[i][1] === 'image'){
+						/* PARSE IMAGES AND CAPTIONS AND CHOICES */
+						var parOptions = data[i][5].split(';'); 							//parse options
+						var parImages = data[i][6].split(';'); 								//parse images
+						var parCaptions = data[i][7].split(';');							//parse captions
+
+						/* CONFIGURE QUESTION */
+						$quizContain.append(quizTemplate.image.frame); //add question
+						var $curQuest = $('#quiz-container .question:eq('+ii+')'); 			//current question
+						var curQuest = '.question:eq('+ii+')';
+
+						/* ADD ELEMENTS */
+						$curQuest.append($(quizTemplate.all.header).html(i + '. ' + data[i][0])); 	//add question
+						for (iii=0 ; iii < parOptions.length ; iii++){							//add options
+							$curQuest.append(quizTemplate.image.optionFrame);					//add option frame
+							var $curOption = $(curQuest + ' .image-option:eq('+iii+')');		//init object
+							var curOption = curQuest + ' .image-option:eq('+iii+')';			//init text
+
+							$(curOption + ' img').attr('src', 'assets/' + parImages[iii]);		//add images
+							$(curOption + ' span:eq(0)').html(parOptions[iii]);					//add option text
+							$(curOption + ' span:eq(1)').html(parCaptions[iii]);				//add captions
+						}
+
+						ii += 1;
+					}
+				}
+			}
+		}
+
+		/* GRAB QUESTION CSV AND PARSE */
+		$.get('test-quest.csv', function(data){
+			var rows = data.split("\n"); // an array where each item is a row
+			rows.forEach(function getvalues(ourrow){
+				var columns = ourrow.split(',');
+				quizQuestions.push(columns)
+			});
+			quizFunctions.createQuiz(quizQuestions);
+		})
+
+
+
+
+
+	</script>
+</body>
+</html>
