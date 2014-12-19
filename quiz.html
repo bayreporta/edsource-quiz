@@ -43,7 +43,7 @@
 				position: 	absolute;
 				display: 	block;
 				z-index: 	1000;
-				top: 		265px;
+				top: 		92%;
 				right: 		2px;
 				padding: 	2px;
 				background: rgba(0,0,0,0.5);
@@ -74,9 +74,12 @@
 			min-height: 	200px;
 		}
 
+			.image-option div {
+				position: 	relative;
+			}
+
 			.image-option img {
 				width: 	   		98%;
-				/*border: 		1px solid #aaa;*/
 				display: 		block;
 				margin: 		0 auto;
 			}
@@ -85,8 +88,8 @@
 			position: 	absolute;
 			display: 	block;
 			z-index: 	1000;
-			top: 		140px;
-			right: 		11px;
+			top: 		87%;
+			right: 		3px;
 			padding: 	2px;
 			background: rgba(0,0,0,0.5);
 			font-size: 	.8em;
@@ -125,6 +128,10 @@
 				margin:	0 10px 0 0;
 			}
 
+		@media screen and (min-width:481px){
+
+		}
+
 	</style>
 </head>
 <body>
@@ -144,7 +151,7 @@
 			},
 			image:{
 				frame: '<div class="question image"></div>',
-				optionFrame: '<div class="image-option"><img src=""><span class="option-text"></span><span class="option-caption"></span></div>'
+				optionFrame: '<div class="image-option"><div><img src=""><span class="option-caption"></span></div><span class="option-text"></span></div>'
 			},
 			text:{
 				frame: 	'<div class="question text"><div class="main-img"><img src=""><span></span></div></div>',
@@ -289,8 +296,8 @@
 								'text': 		parOptions[iii]
 							});										
 							$(curOption + ' img').attr('src', '/assets/' + parImages[iii]);		//add images
-							$(curOption + ' span:eq(0)').html(parOptions[iii]);					//add option text
-							$(curOption + ' span:eq(1)').html(parCaptions[iii]);				//add captions
+							$(curOption + ' .option-text').html(parOptions[iii]);					//add option text
+							$(curOption + ' .option-caption').html(parCaptions[iii]);				//add captions
 						}
 
 						/* INSERT ANSWER BOX */
