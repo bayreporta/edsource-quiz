@@ -1,43 +1,63 @@
 <html>
 <head>
 	<title></title>
+	<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:400italic,400,700|Roboto:400,700,400italic' rel='stylesheet' type='text/css'>
 	<style type="text/css">
+		body {
+			font-size: 		100%;
+			font-family: 	roboto, san-serif;
+		}
+
 		#quiz-container {
 			min-width:		320px;
-			width:			320px;
+			width:			100%;
+			margin: 		0 auto;
 		}
 
 		.header {
-			margin: 		10px 0 25px 0;
+			margin: 		10px 0 60px 0;
 			display: 		block;
+			font-size: 		1.5em;
 		}
 
 		.image-option {
 			display:		block;
 			cursor: 		pointer;
-			margin: 		0 auto 20px auto;
-			border: 		1px solid #333;
-			width: 			200px;
+			margin: 		0 3% 20px auto;
+			/*border: 		1px solid #333;*/
+			width: 			38%;
+			padding: 		20px 2% 0 2%;
+			background: 	#333;
 			position: 		relative;
+			float:  		left;
+			max-width: 		400px;
+			min-height: 	200px;
 		}
 
 			.option-caption {
 				position: 	absolute;
 				display: 	block;
 				z-index: 	1000;
-				top: 		178px;
-				right: 		0;
+				top: 		140px;
+				right: 		11px;
 				padding: 	2px;
-				background:	#fff;
+				background:	rgba(0,0,0,0.5);
+				font-size: 	.8em;
+				color: 		#eee;
 			}
 
 			.option-text {
-				margin: 	5px 0 0 0;
+				padding: 	5px;
 				display: 	block;
+				color: 		#fff;
+				font-size: 	1em;
 			}
 
 			.image-option img {
-				width: 	   	200px;
+				width: 	   		98%;
+				/*border: 		1px solid #aaa;*/
+				display: 		block;
+				margin: 		0 auto;
 			}
 
 	</style>
@@ -50,11 +70,12 @@
 	<script src="http://edsource.org/wp-content/js/underscore-min.js"></script>
 	<script src="http://edsource.org/wp-content/js/modernizr.js"></script>
 	<script type="text/javascript">
-		var quizQuestions = [];
+		var quizQuestions = [], quizStatus = [];
 		var $quizContain = $('#quiz-container');
 		var quizTemplate = {
 			all:{
-				header: '<h2 class="header"></h2>'
+				header: '<h2 class="header"></h2>',
+				answer: '<div class="answer-box"><h3></h3><p></p></div>'
 			},
 			image:{
 				frame: '<div class="question image"></div>',
@@ -62,10 +83,30 @@
 			}
 		}
 		var quizFunctions = {
+			crunchImage:function(quest, option, text){
+				if (quizStatus[quest] == false){
+					$('.question:eq('+ quest +') .image-option:not(.image-option:eq('+option+')) img').add('.question:eq('+ quest +') .image-option:not(.image-option:eq('+option+')) span').css('opacity', 0.4); //gray out all boxes not the one clicked
+
+					/* Color Code Based on Answer */
+					$('.question:eq('+ quest +') .image-option').css('background','#ea9292');
+					$('.question:eq('+ quest +') .image-option:eq('+parseInt(quizQuestions[quest+1][8])+')').css('background','#92ea92');
+					$('.question:eq('+ quest +') .image-option:eq('+parseInt(quizQuestions[quest+1][8])+') img').add('.question:eq('+ quest +') .image-option:eq('+parseInt(quizQuestions[quest+1][8])+') span').css('opacity','1');
+
+					/*$('.answer-box:eq('+quest+')').css('display', 'block');		//unhide that answer box for question
+					$('.answer-box:eq('+quest+') h3').html();
+					$('.answer-box:eq('+quest+') p').html();*/
+					quizStatus[quest] = true;
+				}
+				else {
+					return;
+				}
+
+			},
 			createQuiz:function(data){
 				var ii = 0;
 
 				for (i=1 ; i < data.length ; i++){
+					quizStatus[ii] = false;			//toggle all questions not answered
 					if (data[i][1] === 'Image' || data[i][1] === 'image'){
 						/* PARSE IMAGES AND CAPTIONS AND CHOICES */
 						var parOptions = data[i][5].split(';'); 							//parse options
@@ -84,10 +125,25 @@
 							var $curOption = $(curQuest + ' .image-option:eq('+iii+')');		//init object
 							var curOption = curQuest + ' .image-option:eq('+iii+')';			//init text
 
+							$curOption.on('click', function(){
+								var quest = parseInt($(this).attr('question'));
+								var option = parseInt($(this).attr('option'));
+								var text = $(this).attr('text');
+								quizFunctions.crunchImage(quest, option, text);
+							});	
+
+							$curOption.attr({													//add option and question numbers
+								'option': 		iii,
+								'question': 	ii,
+								'text': 		parOptions[iii]
+							});										
 							$(curOption + ' img').attr('src', 'assets/' + parImages[iii]);		//add images
 							$(curOption + ' span:eq(0)').html(parOptions[iii]);					//add option text
 							$(curOption + ' span:eq(1)').html(parCaptions[iii]);				//add captions
 						}
+
+						/* INSERT ANSWER BOX */
+						$quizContain.append($(quizTemplate.all.answer).attr('question', i).css('display','none'));
 
 						ii += 1;
 					}
