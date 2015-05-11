@@ -149,6 +149,10 @@
 				answer: '<div class="answer-box"><h3></h3><p></p></div>',
 				results:'<div class="results"><h2></h2><img src=""><span></span></div>'
 			},
+			colors:{
+				correct: '#92ea92',
+				incorrect: '#ea9292'
+			},
 			image:{
 				frame: '<div class="question image"></div>',
 				optionFrame: '<div class="image-option"><div><img src=""><span class="option-caption"></span></div><span class="option-text"></span></div>'
@@ -188,6 +192,7 @@
 			calcResults:function(choices, answers){
 				var correct = 0;
 
+				/* COUNT HOW MANY ARE CORRECT */
 				for (i=0 ; i < quizTemplate.data.totalQuest ; i++){
 					if (choices[i] == answers[i]){
 						correct += 1;
@@ -204,19 +209,20 @@
 				$('.results h2').html('You got ' + correct + ' out of ' + quizTemplate.data.totalQuest + ' correct.');
 				$('.results img').attr('src','/assets/' + quizTemplate.data.resultsImg[correct]);
 				$('.results span').html(quizTemplate.data.resultsText[correct]);
-
-
 			},
 			crunchImage:function(quest, option, text){
 				if (quizTemplate.data.quizStatus[quest] == false){
-					$('.question:eq('+ quest +') .image-option:not(.image-option:eq('+option+')) img').add('.question:eq('+ quest +') .image-option:not(.image-option:eq('+option+')) span').css('opacity', 0.4); //gray out all boxes not the one clicked
+					/* gray out all boxes not the one clicked */
+					$('.question:eq('+ quest +') .image-option:not(.image-option:eq('+option+')) img').add('.question:eq('+ quest +') .image-option:not(.image-option:eq('+option+')) span').css('opacity', 0.4); 
 
-					/* Add Choice to Array of Choices */
+					/* Which option did the player pick? */
 					quizTemplate.data.quizChoices[quest] = option;
 
-					/* Color Code Based on Answer */
-					$('.question:eq('+ quest +') .image-option').css('background','#ea9292');
-					$('.question:eq('+ quest +') .image-option:eq('+parseInt(quizTemplate.data.quizQuestions[quest+1][8])+')').css('background','#92ea92');
+					/* All Options Color Coded Incorrect */
+					$('.question:eq('+ quest +') .image-option').css('background',quizTemplate.colors.incorrect);
+
+					/* Color Code Correct Answer and Bring to 1.0 Opacity */
+					$('.question:eq('+ quest +') .image-option:eq('+parseInt(quizTemplate.data.quizQuestions[quest+1][8])+')').css('background',quizTemplate.colors.correct);
 					$('.question:eq('+ quest +') .image-option:eq('+parseInt(quizTemplate.data.quizQuestions[quest+1][8])+') img').add('.question:eq('+ quest +') .image-option:eq('+parseInt(quizTemplate.data.quizQuestions[quest+1][8])+') span').css('opacity','1');
 
 					/* META */
@@ -234,14 +240,17 @@
 			},
 			crunchText:function(quest, option, text){
 				if (quizTemplate.data.quizStatus[quest] == false){
-					$('.question:eq('+ quest +') .text-option:not(.text-option:eq('+option+')) img').add('.question:eq('+ quest +') .text-option:not(.text-option:eq('+option+')) span').css('opacity', 0.4); //gray out all boxes not the one clicked
+					/* gray out all boxes not the one clicked */
+					$('.question:eq('+ quest +') .text-option:not(.text-option:eq('+option+')) img').add('.question:eq('+ quest +') .text-option:not(.text-option:eq('+option+')) span').css('opacity', 0.4); 
 
-					/* Add Choice to Array of Choices */
+					/* Which option did the player pick? */
 					quizTemplate.data.quizChoices[quest] = option;
 
-					/* Color Code Based on Answer */
-					$('.question:eq('+ quest +') .text-option').css('background','#ea9292');
-					$('.question:eq('+ quest +') .text-option:eq('+parseInt(quizTemplate.data.quizQuestions[quest+1][8])+')').css('background','#92ea92');
+					/* All Options Color Coded Incorrect */
+					$('.question:eq('+ quest +') .text-option').css('background',quizTemplate.colors.incorrect);
+
+					/* Color Code Correct Answer and Bring to 1.0 Opacity */
+					$('.question:eq('+ quest +') .text-option:eq('+parseInt(quizTemplate.data.quizQuestions[quest+1][8])+')').css('background',quizTemplate.colors.correct);
 					$('.question:eq('+ quest +') .text-option:eq('+parseInt(quizTemplate.data.quizQuestions[quest+1][8])+') span').css('opacity','1');
 
 					/* META */
@@ -261,8 +270,10 @@
 			createQuiz:function(data){
 				var ii = 0;
 
+				/* GO THROUGH EACH QUESTION; TYPE
+				=================================*/
 				for (i=1 ; i < data.length ; i++){
-					quizTemplate.data.quizStatus[ii] = false;			//toggle all questions not answered
+					quizTemplate.data.quizStatus[ii] = false;								//toggle all questions not answered
 					if (data[i][1] === 'Image' || data[i][1] === 'image'){
 						/* PARSE IMAGES AND CAPTIONS AND CHOICES */
 						var parOptions = data[i][5].split(';'); 							//parse options
@@ -270,7 +281,7 @@
 						var parCaptions = data[i][7].split(';');							//parse captions
 
 						/* CONFIGURE QUESTION */
-						quizTemplate.quizContain.append(quizTemplate.image.frame); //add question
+						quizTemplate.quizContain.append(quizTemplate.image.frame); 			//add question
 						var curQuest = $('#quiz-container .question:eq('+ii+')'); 			//current question
 						var curQuestTag = '.question:eq('+ii+')';
 
