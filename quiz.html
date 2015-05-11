@@ -142,8 +142,8 @@
 	<script src="http://edsource.org/wp-content/js/underscore-min.js"></script>
 	<script src="http://edsource.org/wp-content/js/modernizr.js"></script>
 	<script type="text/javascript">
-		var $quizContain = $('#quiz-container');
 		var quizTemplate = {
+			quizContain: $('#quiz-container'),
 			all:{
 				header: '<h2 class="header"></h2>',
 				answer: '<div class="answer-box"><h3></h3><p></p></div>',
@@ -166,9 +166,7 @@
 				totalQuest:0,
 				resultsText:[],
 				resultsImg:[]
-			}
-		}
-		var quizFunctions = {
+			},
 			calcAnswers:function(data){
 				for (i=1 ; i < data.length; i++){
 					quizTemplate.data.quizAnswers[i-1] = parseInt(data[i][8]);
@@ -183,8 +181,8 @@
 						var columns = ourrow.split(',');
 						quizTemplate.data.quizQuestions.push(columns)
 					});
-					quizFunctions.calcAnswers(quizTemplate.data.quizQuestions);
-					quizFunctions.createQuiz(quizTemplate.data.quizQuestions);
+					quizTemplate.calcAnswers(quizTemplate.data.quizQuestions);
+					quizTemplate.createQuiz(quizTemplate.data.quizQuestions);
 				});
 			},
 			calcResults:function(choices, answers){
@@ -202,7 +200,7 @@
 				}, 1000);
 
 				/* POPULATE RESULTS */
-				$quizContain.append(quizTemplate.all.results);
+				quizTemplate.quizContain.append(quizTemplate.all.results);
 				$('.results h2').html('You got ' + correct + ' out of ' + quizTemplate.data.totalQuest + ' correct.');
 				$('.results img').attr('src','/assets/' + quizTemplate.data.resultsImg[correct]);
 				$('.results span').html(quizTemplate.data.resultsText[correct]);
@@ -231,7 +229,7 @@
 
 				/* TEST IF QUIZ IS FINISHED */
 				if (quizTemplate.data.questAnswered == quizTemplate.data.totalQuest){
-					quizFunctions.calcResults(quizTemplate.data.quizChoices, quizTemplate.data.quizAnswers);
+					quizTemplate.calcResults(quizTemplate.data.quizChoices, quizTemplate.data.quizAnswers);
 				}
 			},
 			crunchText:function(quest, option, text){
@@ -257,7 +255,7 @@
 
 				/* TEST IF QUIZ IS FINISHED */
 				if (quizTemplate.data.questAnswered == quizTemplate.data.totalQuest){
-					quizFunctions.calcResults(quizTemplate.data.quizChoices, quizTemplate.data.quizAnswers);
+					quizTemplate.calcResults(quizTemplate.data.quizChoices, quizTemplate.data.quizAnswers);
 				}
 			},
 			createQuiz:function(data){
@@ -272,36 +270,36 @@
 						var parCaptions = data[i][7].split(';');							//parse captions
 
 						/* CONFIGURE QUESTION */
-						$quizContain.append(quizTemplate.image.frame); //add question
-						var $curQuest = $('#quiz-container .question:eq('+ii+')'); 			//current question
-						var curQuest = '.question:eq('+ii+')';
+						quizTemplate.quizContain.append(quizTemplate.image.frame); //add question
+						var curQuest = $('#quiz-container .question:eq('+ii+')'); 			//current question
+						var curQuestTag = '.question:eq('+ii+')';
 
 						/* ADD ELEMENTS */
-						$curQuest.append($(quizTemplate.all.header).html(i + '. ' + data[i][0])); 	//add question
+						curQuest.append($(quizTemplate.all.header).html(i + '. ' + data[i][0])); 	//add question
 						for (iii=0 ; iii < parOptions.length ; iii++){							//add options
-							$curQuest.append(quizTemplate.image.optionFrame);					//add option frame
-							var $curOption = $(curQuest + ' .image-option:eq('+iii+')');		//init object
-							var curOption = curQuest + ' .image-option:eq('+iii+')';			//init text
+							curQuest.append(quizTemplate.image.optionFrame);					//add option frame
+							var curOption = $(curQuestTag + ' .image-option:eq('+iii+')');		//init object
+							var curOptionTag = curQuestTag + ' .image-option:eq('+iii+')';			//init text
 
-							$curOption.on('click', function(){
+							curOption.on('click', function(){
 								var quest = parseInt($(this).attr('question'));
 								var option = parseInt($(this).attr('option'));
 								var text = $(this).attr('text');
-								quizFunctions.crunchImage(quest, option, text);
+								quizTemplate.crunchImage(quest, option, text);
 							});	
 
-							$curOption.attr({													//add option and question numbers
+							curOption.attr({													//add option and question numbers
 								'option': 		iii,
 								'question': 	ii,
 								'text': 		parOptions[iii]
 							});										
-							$(curOption + ' img').attr('src', '/assets/' + parImages[iii]);		//add images
-							$(curOption + ' .option-text').html(parOptions[iii]);					//add option text
-							$(curOption + ' .option-caption').html(parCaptions[iii]);				//add captions
+							$(curOptionTag + ' img').attr('src', '/assets/' + parImages[iii]);			//add images
+							$(curOptionTag + ' .option-text').html(parOptions[iii]);					//add option text
+							$(curOptionTag + ' .option-caption').html(parCaptions[iii]);				//add captions
 						}
 
 						/* INSERT ANSWER BOX */
-						$quizContain.append($(quizTemplate.all.answer).attr('question', i).css('display','none'));
+						quizTemplate.quizContain.append($(quizTemplate.all.answer).attr('question', i).css('display','none'));
 
 						ii += 1;
 					}
@@ -311,43 +309,44 @@
 						var parOptions = data[i][5].split(';'); 							
 
 						/* CONFIGURE QUESTION */
-						$quizContain.append(quizTemplate.text.frame); 
-						var $curQuest = $('#quiz-container .question:eq('+ii+')'); 		
-						var curQuest = '.question:eq('+ii+')';				
+						quizTemplate.quizContain.append(quizTemplate.text.frame); 
+						var curQuest = $('#quiz-container .question:eq('+ii+')'); 		
+						var curQuestTag = '.question:eq('+ii+')';				
 
 						/* ADD ELEMENTS */
-						$curQuest.append($(quizTemplate.all.header).html(i + '. ' + data[i][0])); 	
+						curQuest.append($(quizTemplate.all.header).html(i + '. ' + data[i][0])); 	
 						for (iii=0 ; iii < parOptions.length ; iii++){							
-							$curQuest.append(quizTemplate.text.optionFrame);					
-							var $curOption = $(curQuest + ' .text-option:eq('+iii+')');		
-							var curOption = curQuest + ' .text-option:eq('+iii+')';			
+							curQuest.append(quizTemplate.text.optionFrame);					
+							var curOption = $(curQuestTag + ' .text-option:eq('+iii+')');		
+							var curOptionTag = curQuestTag + ' .text-option:eq('+iii+')';			
 
-							$curOption.on('click', function(){
+							curOption.on('click', function(){
 								var quest = parseInt($(this).attr('question'));
 								var option = parseInt($(this).attr('option'));
 								var text = $(this).attr('text');
-								quizFunctions.crunchText(quest, option, text);
+								quizTemplate.crunchText(quest, option, text);
 							});	
 
-							$curOption.attr({													
+							curOption.attr({													
 								'option': 		iii,
 								'question': 	ii,
 								'text': 		parOptions[iii]
 							});										
-							$(curOption + ' span').html(parOptions[iii]);					//add option text
+							$(curOptionTag + ' span').html(parOptions[iii]);					//add option text
 						}
 
 						// * MAIN IMGS */
-						$(curQuest + ' img').attr('src', '/assets/' + parImages[1]);
-						$(curQuest + ' .main-img span').html(data[i][4]);
+						$(curQuestTag + ' img').attr('src', '/assets/' + parImages[1]);
+						$(curQuestTag + ' .main-img span').html(data[i][4]);
 
-						$quizContain.append($(quizTemplate.all.answer).attr('question', i).css('display','none'));
+						quizTemplate.quizContain.append($(quizTemplate.all.answer).attr('question', i).css('display','none'));
 
 						ii += 1;
 					}
 				}
 			}
 		}
+	
 
 		/* GRAB QUESTION CSV AND PARSE */
 		$.get('test-results.csv',function(data){
@@ -363,7 +362,7 @@
 				quizTemplate.data.resultsImg[i-1] = temp[i][2];
 			}
 
-			quizFunctions.processData();
+			quizTemplate.processData();
 		});
 
 		
